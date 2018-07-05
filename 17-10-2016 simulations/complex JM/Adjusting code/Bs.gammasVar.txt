@@ -1,0 +1,7 @@
+var.Bs.gammas1 <- rep(con$K, (ncWBH))
+var.Bs.gammas2 <- rep(con$K, (ncWBH))
+var.Bs.gammas3 <- rep(con$K, (ncWBH))
+var.Bs.gammas4 <- rep(con$K, (ncWBH))
+var.Bs.gammas5 <- rep(con$K, (ncWBH))
+var.Bs.gammas6 <- rep(con$K, (ncWBH))
+

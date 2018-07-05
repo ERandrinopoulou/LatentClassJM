@@ -1,7 +1,6 @@
-# Windows thumbnail cache files
+# Windows image file caches
 Thumbs.db
 ehthumbs.db
-ehthumbs_vista.db
 
 # Folder config file
 Desktop.ini
@@ -21,3 +20,67 @@ $RECYCLE.BIN/
 # =========================
 # Operating System Files
 # =========================
+
+# OSX
+# =========================
+
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Thumbnails
+._*
+
+# Files that might appear in the root of a volume
+.DocumentRevisions-V100
+.fseventsd
+.Spotlight-V100
+.TemporaryItems
+.Trashes
+.VolumeIcon.icns
+
+# Directories potentially created on remote AFP share
+.AppleDB
+.AppleDesktop
+Network Trash Folder
+Temporary Items
+.apdisk
+
+
+###############################
+###############################
+###############################
+*.RData
+.Rhistory
+Kazem/
+Dimitris_JAGSmodel.R
+3-10-2016 simulations old/
+22-06-2017 simulation TEST/
+15-09-2016 analysis old/
+12-10-2016 analysis/
+
+simple JM/
+Latent Class model/
+test selections classes in mixed models/
+evolutions test.R
+tests.R
+
+
+OLD results/
+OLD results 2/
+
+simulate class 1 TEST.R
+Simulate multiple datasets.R
+
+
+Results2Class/
+Results3Class/
+
+Results3ClassSelection*/
+Results2ClassSelection*/
+Results1ClassSelection*/
+
+22-06-2017 simulation TEST/
+
+*.xlsx
+*.eps

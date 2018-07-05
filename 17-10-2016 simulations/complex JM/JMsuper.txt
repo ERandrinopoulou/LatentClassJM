@@ -1,0 +1,61 @@
+model {
+ for (i in 1:N) {
+    for (j in offset[i]:(offset[i+1] - 1)) {
+        muy[j] <- inprod((equals(v[i], 1) * betas1[1:ncX]) + (equals(v[i], 2) * betas2[1:ncX]) + (equals(v[i], 3) * betas3[1:ncX]) + (equals(v[i], 4) * betas4[1:ncX]) + (equals(v[i], 5) * betas5[1:ncX]) + (equals(v[i], 6) * betas6[1:ncX]), X[j, 1:ncX]) +
+         inprod((equals(v[i], 1) * b1[i, 1:ncZ])+ (equals(v[i], 2) * b2[i, 1:ncZ])+ (equals(v[i], 3) * b3[i, 1:ncZ])+ (equals(v[i], 4) * b4[i, 1:ncZ])+ (equals(v[i], 5) * b5[i, 1:ncZ])+ (equals(v[i], 6) * b6[i, 1:ncZ]), Z[j, 1:ncZ] )
+        y[j] ~ dnorm(muy[j], tau)
+    }
+    etaBaseline[i] <- inprod((equals(v[i], 1) * gammas1[1:ncW]) + (equals(v[i], 2) * gammas2[1:ncW]) + (equals(v[i], 3) * gammas3[1:ncW]) + (equals(v[i], 4) * gammas4[1:ncW]) + (equals(v[i], 5) * gammas5[1:ncW]) + (equals(v[i], 6) * gammas6[1:ncW]), W[i, 1:ncW])
+    log.h0.T[i] <- inprod((equals(v[i], 1) * Bs.gammas1[1:ncWBH]) + (equals(v[i], 2) * Bs.gammas2[1:ncWBH]) + (equals(v[i], 3) * Bs.gammas3[1:ncWBH]) + (equals(v[i], 4) * Bs.gammas4[1:ncWBH]) + (equals(v[i], 5) * Bs.gammas5[1:ncWBH]) + (equals(v[i], 6) * Bs.gammas6[1:ncWBH]), WBH[i, 1:ncWBH])
+    f.T[i] <- inprod((equals(v[i], 1) * betas1[1:ncX]) + (equals(v[i], 2) * betas2[1:ncX]) + (equals(v[i], 3) * betas3[1:ncX]) + (equals(v[i], 4) * betas4[1:ncX]) + (equals(v[i], 5) * betas5[1:ncX]) + (equals(v[i], 6) * betas6[1:ncX]), Xtime[i, 1:ncX]) + inprod((equals(v[i], 1) * b1[i, 1:ncZ])+ (equals(v[i], 2) * b2[i, 1:ncZ])+ (equals(v[i], 3) * b3[i, 1:ncZ])+ (equals(v[i], 4) * b4[i, 1:ncZ])+ (equals(v[i], 5) * b5[i, 1:ncZ])+ (equals(v[i], 6) * b6[i, 1:ncZ]), Ztime[i, 1:ncZ])
+    log.hazard[i] <- log.h0.T[i] + etaBaseline[i] + ((equals(v[i], 1) * alphas1) + (equals(v[i], 2) * alphas2) + (equals(v[i], 3) * alphas3) + (equals(v[i], 4) * alphas4) + (equals(v[i], 5) * alphas5) + (equals(v[i], 6) * alphas6)) * f.T[i]
+    for (k in 1:K) {
+        f.s[i, k] <- inprod((equals(v[i], 1) * betas1[1:ncX]) + (equals(v[i], 2) * betas2[1:ncX]) + (equals(v[i], 3) * betas3[1:ncX]) + (equals(v[i], 4) * betas4[1:ncX]) + (equals(v[i], 5) * betas5[1:ncX]) + (equals(v[i], 6) * betas6[1:ncX]), Xs[K * (i-1) + k, 1:ncX]) + inprod((equals(v[i], 1) * b1[i, 1:ncZ]) + (equals(v[i], 2) * b2[i, 1:ncZ]) + (equals(v[i], 3) * b3[i, 1:ncZ]) + (equals(v[i], 4) * b4[i, 1:ncZ]) + (equals(v[i], 5) * b5[i, 1:ncZ]) + (equals(v[i], 6) * b6[i, 1:ncZ]), Zs[K * (i-1) + k, 1:ncZ])
+        log.h0.s[i, k] <- inprod((equals(v[i], 1) * Bs.gammas1[1:ncWBH]) + (equals(v[i], 2) * Bs.gammas2[1:ncWBH]) + (equals(v[i], 3) * Bs.gammas3[1:ncWBH]) + (equals(v[i], 4) * Bs.gammas4[1:ncWBH]) + (equals(v[i], 5) * Bs.gammas5[1:ncWBH]) + (equals(v[i], 6) * Bs.gammas6[1:ncWBH]), WBHs[K * (i-1) + k, 1:ncWBHs])
+        SurvLong[i, k] <- wk[k] * exp(log.h0.s[i, k] + ((equals(v[i], 1) * alphas1) + (equals(v[i], 2) * alphas2) + (equals(v[i], 3) * alphas3) + (equals(v[i], 4) * alphas4) + (equals(v[i], 5) * alphas5) + (equals(v[i], 6) * alphas6)) * f.s[i, k])
+    }
+    log.survival[i] <- -exp(etaBaseline[i]) * P[i] * sum(SurvLong[i, ])
+    phi[i] <- C - (event[i] * log.hazard[i]) - log.survival[i]
+    zeros[i] ~ dpois(phi[i])
+    v[i] ~ dcat(pr[]) 
+    b1[i, 1:nb] ~ dmnorm(mu01[], inv.D1[, ])
+    b2[i, 1:nb] ~ dmnorm(mu02[], inv.D2[, ])
+    b3[i, 1:nb] ~ dmnorm(mu03[], inv.D3[, ])
+    b4[i, 1:nb] ~ dmnorm(mu04[], inv.D4[, ])
+    b5[i, 1:nb] ~ dmnorm(mu05[], inv.D5[, ])
+    b6[i, 1:nb] ~ dmnorm(mu06[], inv.D6[, ])
+ }
+    pr[1:6] ~ ddirch(prior.cl[]) 
+    betas1[1:(ncX)] ~ dmnorm(priorMean.betas1[], priorTau.betas1[, ])
+    betas2[1:(ncX)] ~ dmnorm(priorMean.betas2[], priorTau.betas2[, ])
+    betas3[1:(ncX)] ~ dmnorm(priorMean.betas3[], priorTau.betas3[, ])
+    betas4[1:(ncX)] ~ dmnorm(priorMean.betas4[], priorTau.betas4[, ])
+    betas5[1:(ncX)] ~ dmnorm(priorMean.betas5[], priorTau.betas5[, ])
+    betas6[1:(ncX)] ~ dmnorm(priorMean.betas6[], priorTau.betas6[, ])
+    tau ~ dgamma(priorA.tau, priorB.tau)
+    inv.D1[1:nb, 1:nb] ~ dwish(priorR.D1[, ], priorK.D1)
+    inv.D2[1:nb, 1:nb] ~ dwish(priorR.D2[, ], priorK.D2)
+    inv.D3[1:nb, 1:nb] ~ dwish(priorR.D3[, ], priorK.D3)
+    inv.D4[1:nb, 1:nb] ~ dwish(priorR.D4[, ], priorK.D4)
+    inv.D5[1:nb, 1:nb] ~ dwish(priorR.D5[, ], priorK.D5)
+    inv.D6[1:nb, 1:nb] ~ dwish(priorR.D6[, ], priorK.D6)
+    gammas1[1:(ncW)] ~ dmnorm(priorMean.gammas1[], priorTau.gammas1[, ])
+    gammas2[1:(ncW)] ~ dmnorm(priorMean.gammas2[], priorTau.gammas2[, ])
+    gammas3[1:(ncW)] ~ dmnorm(priorMean.gammas3[], priorTau.gammas3[, ])
+    gammas4[1:(ncW)] ~ dmnorm(priorMean.gammas4[], priorTau.gammas4[, ])
+    gammas5[1:(ncW)] ~ dmnorm(priorMean.gammas5[], priorTau.gammas5[, ])
+    gammas6[1:(ncW)] ~ dmnorm(priorMean.gammas6[], priorTau.gammas6[, ])
+    alphas1 ~ dnorm(priorMean.alphas1, priorTau.alphas1)
+    alphas2 ~ dnorm(priorMean.alphas2, priorTau.alphas2)
+    alphas3 ~ dnorm(priorMean.alphas3, priorTau.alphas3)
+    alphas4 ~ dnorm(priorMean.alphas4, priorTau.alphas4)
+    alphas5 ~ dnorm(priorMean.alphas5, priorTau.alphas5)
+    alphas6 ~ dnorm(priorMean.alphas6, priorTau.alphas6)
+    Bs.gammas1[1:(ncWBH)] ~ dmnorm(priorMean.Bs.gammas1[], priorTau.Bs.gammas1[, ])
+    Bs.gammas2[1:(ncWBH)] ~ dmnorm(priorMean.Bs.gammas2[], priorTau.Bs.gammas2[, ])
+    Bs.gammas3[1:(ncWBH)] ~ dmnorm(priorMean.Bs.gammas3[], priorTau.Bs.gammas3[, ])
+    Bs.gammas4[1:(ncWBH)] ~ dmnorm(priorMean.Bs.gammas4[], priorTau.Bs.gammas4[, ])
+    Bs.gammas5[1:(ncWBH)] ~ dmnorm(priorMean.Bs.gammas5[], priorTau.Bs.gammas5[, ])
+    Bs.gammas6[1:(ncWBH)] ~ dmnorm(priorMean.Bs.gammas6[], priorTau.Bs.gammas6[, ])
+}
+

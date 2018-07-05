@@ -1,0 +1,7 @@
+var.betas1 <- rep(con$K, ncX)
+var.betas2 <- rep(con$K, ncX)
+var.betas3 <- rep(con$K, ncX)
+var.betas4 <- rep(con$K, ncX)
+var.betas5 <- rep(con$K, ncX)
+var.betas6 <- rep(con$K, ncX)
+

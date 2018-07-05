@@ -1,0 +1,7 @@
+betas1 <- rep(0, ncX)
+betas2 <- rep(0, ncX)
+betas3 <- rep(0, ncX)
+betas4 <- rep(0, ncX)
+betas5 <- rep(0, ncX)
+betas6 <- rep(0, ncX)
+

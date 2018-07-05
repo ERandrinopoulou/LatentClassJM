@@ -1,0 +1,1 @@
+sims.list$b <- cbind(sims.list$b1, sims.list$b2, sims.list$b3)

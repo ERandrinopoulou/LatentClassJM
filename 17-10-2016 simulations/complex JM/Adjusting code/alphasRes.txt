@@ -1,0 +1,1 @@
+sims.list$alphas <- cbind(sims.list$alphas1, sims.list$alphas2, sims.list$alphas3, sims.list$alphas4, sims.list$alphas5, sims.list$alphas6)

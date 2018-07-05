@@ -1,0 +1,1 @@
+sims.list$betas <- cbind(sims.list$betas1, sims.list$betas2, sims.list$betas3, sims.list$betas4, sims.list$betas5, sims.list$betas6)

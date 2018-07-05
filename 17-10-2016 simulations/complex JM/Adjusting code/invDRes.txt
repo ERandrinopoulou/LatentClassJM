@@ -1,0 +1,1 @@
+sims.list$inv.D <- cbind(sims.list$inv.D1, sims.list$inv.D2, sims.list$inv.D3, sims.list$inv.D4, sims.list$inv.D5, sims.list$inv.D6)

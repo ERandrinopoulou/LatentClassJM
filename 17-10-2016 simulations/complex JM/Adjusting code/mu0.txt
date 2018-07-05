@@ -1,0 +1,7 @@
+mu01 <- rep(0,(ncZ))
+mu02 <- rep(0,(ncZ))
+mu03 <- rep(0,(ncZ))
+mu04 <- rep(0,(ncZ))
+mu05 <- rep(0,(ncZ))
+mu06 <- rep(0,(ncZ))
+

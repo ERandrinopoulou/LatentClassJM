@@ -1,0 +1,7 @@
+alphas1 <- 0
+alphas2 <- 0
+alphas3 <- 0
+alphas4 <- 0
+alphas5 <- 0
+alphas6 <- 0
+

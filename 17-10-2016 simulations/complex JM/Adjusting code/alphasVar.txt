@@ -1,0 +1,7 @@
+var.alphas1 <- 100
+var.alphas2 <- 100
+var.alphas3 <- 100
+var.alphas4 <- 100
+var.alphas5 <- 100
+var.alphas6 <- 100
+

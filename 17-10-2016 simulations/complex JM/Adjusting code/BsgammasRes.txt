@@ -1,0 +1,1 @@
+sims.list$Bs.gammas <- cbind(sims.list$Bs.gammas1, sims.list$Bs.gammas2, sims.list$Bs.gammas3, sims.list$Bs.gammas4, sims.list$Bs.gammas5, sims.list$Bs.gammas6)

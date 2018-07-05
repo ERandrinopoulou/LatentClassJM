@@ -1,0 +1,7 @@
+Bs.gammas1 <- rep(0, (ncWBH))
+Bs.gammas2 <- rep(0, (ncWBH))
+Bs.gammas3 <- rep(0, (ncWBH))
+Bs.gammas4 <- rep(0, (ncWBH))
+Bs.gammas5 <- rep(0, (ncWBH))
+Bs.gammas6 <- rep(0, (ncWBH))
+
