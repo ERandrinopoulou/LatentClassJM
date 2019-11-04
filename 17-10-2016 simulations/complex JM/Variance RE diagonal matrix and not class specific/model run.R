@@ -79,7 +79,7 @@ con <- list(program = "JAGS", n.chains = 1, n.iter = 50000,
             n.burnin = 25000, n.thin = 10, n.adapt = 500, K = 1000,
             C = 5000, working.directory = getwd(), bugs.directory = "C:/Program Files/WinBUGS14/",
             openbugs.directory = NULL, clearWD = TRUE, over.relax = TRUE,
-            knots = NULL, ObsTimes.knots = TRUE, lng.in.kn = 5, ordSpline = 4,
+            knots = NULL, ObsTimes.knots = TRUE, lng.in.kn = 5, ordSpline = 3,
             bugs.seed = 1, quiet = FALSE)
 
 
@@ -94,22 +94,31 @@ x <- list(X = X, Z = Z,  W = if (survMod == "weibull-PH") {
 ) 
 
 
-#P-splines baseline hazard
-thi = floor(max(Time)) +1
-tlo = 0
-nseg = 3
-bdeg = 2
-con$knots <- rr <- knots(tlo, thi, nseg, bdeg)
+# Baseline hazard
+kn <- if (is.null(con$knots)) {
+  pp <- seq(0, 1, length.out = con$lng.in.kn + 2)
+  pp <- tail(head(pp, -1), -1)
+  tt <- if (con$ObsTimes.knots) {
+    Time
+  } else {  Time[event == 1]    }
+  quantile(tt, pp, names = FALSE)
+} else {
+  con$knots
+}
+kn <- kn[kn < max(Time)]
+rr <- sort(c(rep(range(Time, st), con$ordSpline), kn))
+con$knots <- rr
 
+WBH <- splineDesign(rr, Time, ord = con$ordSpline)
+if (any(colSums(WBH) == 0))
+  stop("\nsome of the knots of the B-splines basis are set outside the range",
+       "\n   of the observed event times for one of the strata; refit the model",
+       "\n   setting the control argument 'equal.strata.knots' to FALSE.")
 
-B0 = bbase(Time, tlo, thi, nseg, bdeg)
-WBH <-B0
-B0 = bbase(c(t(st)), tlo, thi, nseg, bdeg)
-WBHs <-B0
+# design matrices for the baseline hazard for the 15-point Gauss-Kronrod quadrature rule approximation
+WBHs <- splineDesign(rr, c(t(st)), ord = con$ordSpline)
 
 x <- c(x, list(WBH = WBH, WBHs = WBHs))
-
-
 
 
 #####################################################
@@ -147,7 +156,7 @@ write.table(betaF(), filename, append = FALSE, quote = FALSE, sep = " ",
             col.names = FALSE, qmethod = c("escape", "double"))
 
 
-source("Adjusting code\\beta.txt")
+source(filename)
 
 
 betaVar <- "string"
@@ -168,7 +177,7 @@ write.table(betaVarF(), filename, append = FALSE, quote = FALSE, sep = " ",
             col.names = FALSE, qmethod = c("escape", "double"))
 
 
-source("Adjusting code\\betaVar.txt")
+source(filename)
 
 
 al <- "string"
@@ -189,7 +198,7 @@ write.table(alF(), filename, append = FALSE, quote = FALSE, sep = " ",
             col.names = FALSE, qmethod = c("escape", "double"))
 
 
-source("Adjusting code\\alphas.txt")
+source(filename)
 
 
 alVar <- "string"
@@ -234,7 +243,7 @@ write.table(gamF(), filename, append = FALSE, quote = FALSE, sep = " ",
             col.names = FALSE, qmethod = c("escape", "double"))
 
 
-source("Adjusting code\\gammas.txt")
+source(filename)
 
 if (fixedGammas == TRUE) {
 gamVar <- paste0("var.gammas <- rep(con$K, (ncW))", sep = "", collapse = "")
@@ -256,7 +265,7 @@ write.table(gamVarF(), filename, append = FALSE, quote = FALSE, sep = " ",
             col.names = FALSE, qmethod = c("escape", "double"))
 
 
-source("Adjusting code\\gammasVar.txt")
+source(filename)
 
 
 if (fixedBsgammas == TRUE) {
@@ -280,7 +289,7 @@ write.table(Bs.gamF(), filename, append = FALSE, quote = FALSE, sep = " ",
             col.names = FALSE, qmethod = c("escape", "double"))
 
 
-source("Adjusting code\\Bs.gammas.txt")
+source(filename)
 
 
 if (fixedBsgammas == TRUE) {
@@ -305,7 +314,7 @@ write.table(Bs.gamVarF(), filename, append = FALSE, quote = FALSE, sep = " ",
             col.names = FALSE, qmethod = c("escape", "double"))
 
 
-source("Adjusting code\\Bs.gammasVar.txt")
+source(filename)
 
 
 
@@ -327,7 +336,7 @@ write.table(mu0F(), filename, append = FALSE, quote = FALSE, sep = " ",
             col.names = FALSE, qmethod = c("escape", "double"))
 
 
-source("Adjusting code\\mu0.txt")
+source(filename)
 
 b <- cbind(data.matrix(ranef(lmeObject)))
 
@@ -339,9 +348,6 @@ if (family == "gaussian") {
 }
 
 #####################################################################################################
-
-#######
-#Data for jags
 
 #Data for jags
 dataMCMCi <- paste0("N = nY, K = K, offset = offset, X = X, Xtime = Xtime, ncX = ncol(X), ncZ = ncol(Z), 
@@ -478,7 +484,7 @@ write.table(dataMCMC, filename, append = FALSE, quote = FALSE, sep = " ",
             col.names = FALSE, qmethod = c("escape", "double"))
 
 
-source("Adjusting code\\MCMCdata.txt")
+source(filename)
 
 
 # Paramteras to monitor
@@ -486,10 +492,11 @@ parbet <- "string"
 for (jj in 1:Class) {
   parbet[jj] <- paste0("\"betas", jj, "\"", sep = "", collapse = "")
 }
-parinvD <- "string"
-for (jj in 1:Class) {
-  parinvD [jj] <- paste0("\"inv.D", jj, "\"", sep = "", collapse = "")
-}
+
+# parinvD <- "string"
+# for (jj in 1:Class) {
+#   parinvD [jj] <- paste0("\"inv.D", jj, "\"", sep = "", collapse = "")
+# }
 parb <- "string"
 for (jj in 1:Class) {
   parb[jj] <- paste0("\"b", jj, "\"", sep = "", collapse = "")
@@ -525,9 +532,10 @@ if (fixedBsgammas == TRUE) {
 parbetF <- function(){
   paste0(parbet, sep = "", collapse = ", ")
 }
-parinvDF <- function(){
-  paste0(parinvD, sep = "", collapse = ", ")
-}
+
+# parinvDF <- function(){
+#   paste0(parinvD, sep = "", collapse = ", ")
+# }
 parbF <- function(){
   paste0(parb, sep = "", collapse = ", ")
 }
@@ -543,7 +551,7 @@ parbsgamF <- function(){
 
 
 
-parms <- paste0("parms <- c(", parbetF(), ",", if (family == "gaussian") {paste0("\"tau\"",",")},  parinvDF() ,", ", 
+parms <- paste0("parms <- c(", parbetF(), ",", if (family == "gaussian") {paste0("\"tau\"",",")}, {paste0("\"inv.D\"",",")}, 
                 pargamF(), ", ", parbF(), ", ", 
                 if (method == "JM") {paste0(paralF(), ", ")}, parbsgamF(), ", ",
                 "\"pr\"", ", ", "\"v\"", " )")
@@ -557,29 +565,15 @@ write.table(parms, filename, append = FALSE, quote = FALSE, sep = " ",
             col.names = FALSE, qmethod = c("escape", "double"))
 
 
-source("Adjusting code\\params.txt")
+source(filename)
 
 #####################
+JAGSmodel(Class, family, method, hc, fixedGammas, fixedBsgammas, fixedInvD, RM_method)
 #####################
 
-if (hc == TRUE) {
-vec <- paste(fm1$terms)
-vecRE <- paste(formula(fm1$modelStruct$reStruct[[1]]))
-vecREid <- "IDnr"
-formula1 <- noquote(paste(vec[2], vec[1], vec[3], "+ (", vecRE[2], "|", vecREid, ")", sep = " ", collapse = ""))
-components <- extractFrames(cat(formula1), data = data)
+Data$inv.D <- matrix(0, nb, nb)
+diag(Data$inv.D) <- NA
 
-components <- extractFrames(y0 ~ group + echotime + (echotime | IDnr), data = data)
-components <- extractFrames(unname(formula(fm1)), data = data)
-
-colmns_HC <- components$colmns_HC
-Xhc <- components$Xhc
-Data$colmns_HC <- colmns_HC
-Data$Xhc <- Xhc
-}
-#####################
-JAGSmodel(Class, family, method, hc, fixedGammas, fixedBsgammas, RM_method)
-#####################
 
 # Model in JAGS
 model.fit <- jags.model(file = "JMsuper.txt", data = Data, n.chains = con$n.chains, 

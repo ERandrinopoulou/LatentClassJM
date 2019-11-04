@@ -1,0 +1,1 @@
+parms <- c("betas1", "betas2", "betas3", "betas4", "betas5", "betas6","tau","inv.D","gammas1", "gammas2", "gammas3", "gammas4", "gammas5", "gammas6", "b1", "b2", "b3", "b4", "b5", "b6", "alphas1", "alphas2", "alphas3", "alphas4", "alphas5", "alphas6", "Bs.gammas1", "Bs.gammas2", "Bs.gammas3", "Bs.gammas4", "Bs.gammas5", "Bs.gammas6", "pr", "v" )

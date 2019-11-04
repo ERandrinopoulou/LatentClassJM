@@ -1,7 +1,7 @@
 
-#rm(list=ls(all=TRUE))
+if (ClassSim == 3) n = 900
 
-n = 350#1050 #n <- dim(mat1)[1]
+
 age <- rnorm(n, 45, 15.69578) #age <- mat1$age
 
 

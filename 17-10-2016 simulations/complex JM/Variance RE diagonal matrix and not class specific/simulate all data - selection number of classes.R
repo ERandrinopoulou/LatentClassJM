@@ -1,10 +1,9 @@
 rm(list=ls(all=TRUE))
 
-setwd("G:/2014-10 PostDoc/super JM/Latent class JM/17-10-2016 simulations/complex JM")
-
 library(JMbayes)
 library(rjags)
 library(xtable)
+library(splines)
 
 ClassSim <- 3
 Class <- 6
@@ -13,6 +12,7 @@ method <- "JM"
 hc <- FALSE
 fixedGammas <- FALSE
 fixedBsgammas <- FALSE
+fixedInvD <- TRUE
 RM_method <- TRUE
 
 
@@ -23,7 +23,7 @@ source("Functions.R")
 dir.create(paste0("Results", ClassSim, "ClassSelection", Class, noquote(method), "alpha", a ))
 #################################################
 #################################################
-M <- 5
+M <- 150
 
 betas1mean <- matrix(0, M, Class*3)
 tau1mean <- numeric(M)
@@ -34,7 +34,7 @@ weight <- list(M)
 conv <- list(M)
 listRes<- list(M)
 
-for (l in 5:M) {
+for (l in 1:M) {
   
   print(l)
   set.seed(l)
@@ -209,7 +209,7 @@ if (method == "JM") {
 ##################################################################################
 ##################################################################################
 Class <- 6
-ClassSim <- 3
+ClassSim <- 1
 M <- 150
 a <- 6.9
 method <-  "JM"
@@ -321,7 +321,6 @@ sum(cl_0.08[1:M] == ClassSim)/M
 sum(cl_0.10[1:M] == ClassSim)/M
 sum(cl_0.12[1:M] == ClassSim)/M
 sum(cl_0.15[1:M] == ClassSim)/M
-sum(cl_0.18[1:M] == ClassSim)/M
 
 Mod(cl_0.01[1:M])
 Mod(cl_0.02[1:M])
@@ -330,7 +329,7 @@ Mod(cl_0.08[1:M])
 Mod(cl_0.10[1:M])
 Mod(cl_0.12[1:M])
 Mod(cl_0.15[1:M])
-Mod(cl_0.18[1:M])
+
 
 sum(cl_0.01[vecCon2] == ClassSim)/length(vecCon2)
 sum(cl_0.02[vecCon2] == ClassSim)/length(vecCon2)

@@ -24,7 +24,7 @@ knots <- function(xl, xr, ndx, deg){
 }
 
 
-JAGSmodel <- function(jj, family, method, hc, fixedGammas, fixedBsgammas, RM_method){
+JAGSmodel <- function(jj, family, method, hc, fixedGammas, fixedBsgammas, fixedInvD, RM_method){
   
   myt <- function(times = 1) {
     tb <- "    "
@@ -184,7 +184,7 @@ JAGSmodel <- function(jj, family, method, hc, fixedGammas, fixedBsgammas, RM_met
     
     prior.b.hier2 <- "string"
     for (i in 1:jj) {
-      prior.b.hier2[i] <- paste0(myt(), "u", i, "[i, 1:nb] ~ dmnorm(mu.u[i, ], inv.D", i, "[, ]) \n") 
+      prior.b.hier2[i] <- paste0(myt(), "u", i, "[i, 1:nb] ~ dmnorm(mu.u[i, ], inv.D", jj ,"[, ]) \n") 
     }
     
   }
@@ -278,27 +278,40 @@ JAGSmodel <- function(jj, family, method, hc, fixedGammas, fixedBsgammas, RM_met
    }
   }
   
-  inv.D[1:nb, 1:nb] ~ dwish(priorR.D[, ], priorK.D)
   
   prior.invD <- "string"
   for (i in 1:jj) {
-    prior.invD[i] <- paste0(myt(), "inv.D", i, "[1:nb, 1:nb] ~ dwish(priorR.D", i, "[, ], priorK.D", i, ")\n")  
+    prior.invD[i] <- paste0(myt(), "inv.D", i, "[1:nb, 1:nb] = inv.D\n")  
   }
+  
+
+  if (fixedInvD == TRUE) {
+    prior.invD2 <- paste0(myt(), "for (k in 1:nb){\n", myt(2), 
+                          "inv.D[k, k] ~ dgamma(priorA.tau, priorB.tau)\n",  myt(), "}\n")
+  } else {
+    prior.invD2 <- "string"
+    for (i in 1:jj) {
+      prior.invD2[i] <- paste0(myt(), "inv.D", i, "[1:nb, 1:nb] ~ dwish(priorR.D", i, "[, ], priorK.D", i, ")\n")  
+    }
+  }
+  
+
   
   
   
   priors <- function() {
     prior.betas <- paste0(prior.betas, collapse = "")
     prior.tau <- paste0(myt(), "tau ~ dgamma(priorA.tau, priorB.tau)\n", collapse = "")
-    prior.invD <-  paste0(prior.invD, collapse = "")
+    prior.invD2 <-  paste0(prior.invD2, collapse = "")
+    if (fixedInvD == TRUE) {prior.invD <-  paste0(prior.invD, collapse = "")}
     prior.gam <- paste0(prior.gammas, collapse = "")
     prior.als <- paste0(prior.alphas, collapse = "")
     prior.Bs.gam <- paste0(prior.Bs.gammas, collapse = "")
     if (RM_method == TRUE) {
       classtem <- paste0(class1, sep = "", collapse = " ")
-      paste0(classtem, prior.betas, if (family == "gaussian") {paste0(prior.tau)}, prior.invD, prior.gam, if (method == "JM") {paste0(prior.als)}, prior.Bs.gam)
+      paste0(classtem, prior.betas, if (family == "gaussian") {paste0(prior.tau)}, prior.invD2, if (fixedInvD == TRUE) {paste0(prior.invD)}, prior.gam, if (method == "JM") {paste0(prior.als)}, prior.Bs.gam)
     } else {
-      paste0(prior.betas, if (family == "gaussian") {paste0(prior.tau)}, prior.invD, prior.gam, if (method == "JM") {paste0(prior.als)}, prior.Bs.gam)
+      paste0(prior.betas, if (family == "gaussian") {paste0(prior.tau)}, prior.invD2, if (fixedInvD == TRUE) {paste0(prior.invD)}, prior.gam, if (method == "JM") {paste0(prior.als)}, prior.Bs.gam)
     }
   }
   

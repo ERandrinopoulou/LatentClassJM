@@ -45,7 +45,8 @@ $RECYCLE.BIN/
 Network Trash Folder
 Temporary Items
 .apdisk
-
+.pdf
+*.jpg
 
 ###############################
 ###############################
@@ -57,7 +58,9 @@ Dimitris_JAGSmodel.R
 3-10-2016 simulations old/
 22-06-2017 simulation TEST/
 15-09-2016 analysis old/
-12-10-2016 analysis/
+12-10-2016 analysis (after first submission)/
+04-11-2019 analysis (after revision)
+new simulations after review/
 
 simple JM/
 Latent Class model/
@@ -79,6 +82,8 @@ Results3Class/
 Results3ClassSelection*/
 Results2ClassSelection*/
 Results1ClassSelection*/
+
+Variance RE full matrix and class specific/
 
 22-06-2017 simulation TEST/
 

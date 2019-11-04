@@ -33,12 +33,15 @@ model {
     betas5[1:(ncX)] ~ dmnorm(priorMean.betas5[], priorTau.betas5[, ])
     betas6[1:(ncX)] ~ dmnorm(priorMean.betas6[], priorTau.betas6[, ])
     tau ~ dgamma(priorA.tau, priorB.tau)
-    inv.D1[1:nb, 1:nb] ~ dwish(priorR.D1[, ], priorK.D1)
-    inv.D2[1:nb, 1:nb] ~ dwish(priorR.D2[, ], priorK.D2)
-    inv.D3[1:nb, 1:nb] ~ dwish(priorR.D3[, ], priorK.D3)
-    inv.D4[1:nb, 1:nb] ~ dwish(priorR.D4[, ], priorK.D4)
-    inv.D5[1:nb, 1:nb] ~ dwish(priorR.D5[, ], priorK.D5)
-    inv.D6[1:nb, 1:nb] ~ dwish(priorR.D6[, ], priorK.D6)
+    for (k in 1:nb){
+        inv.D[k, k] ~ dgamma(priorA.tau, priorB.tau)
+    }
+    inv.D1[1:nb, 1:nb] = inv.D
+    inv.D2[1:nb, 1:nb] = inv.D
+    inv.D3[1:nb, 1:nb] = inv.D
+    inv.D4[1:nb, 1:nb] = inv.D
+    inv.D5[1:nb, 1:nb] = inv.D
+    inv.D6[1:nb, 1:nb] = inv.D
     gammas1[1:(ncW)] ~ dmnorm(priorMean.gammas1[], priorTau.gammas1[, ])
     gammas2[1:(ncW)] ~ dmnorm(priorMean.gammas2[], priorTau.gammas2[, ])
     gammas3[1:(ncW)] ~ dmnorm(priorMean.gammas3[], priorTau.gammas3[, ])

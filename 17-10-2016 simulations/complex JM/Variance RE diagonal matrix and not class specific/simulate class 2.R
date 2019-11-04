@@ -2,11 +2,8 @@
 #rm(list=ls(all=TRUE))
 
 
-if (ClassSim == 3) n = 350
-if (ClassSim == 2) n = 525
-if (ClassSim == 1) n = 1050
-
-
+if (ClassSim == 3) n = 300
+if (ClassSim == 2) n = 600
 
 age <- rnorm(n, 45, 15.69578) #age <- mat1$age
 
@@ -20,19 +17,20 @@ t.max <- 19.5 # maximum follow-up time
 ################################################
 
 # parameters for the linear mixed effects model 1
-betas <- c("(Intercept)" = 8.0317, "Group1" = -5.8568, "Time1" =  -0.1578)
+betas <- c("(Intercept)" = -8.0317, "Group1" = 12.2066, "Time1" =  0.4578)
 sigma.y <- 0.6920  # measurement error standard deviation
 
 
 # parameters for the survival model
-gammas <- c("(Intercept)" = -4.8526, "Age" = -0.0150) # coefficients for baseline covariates
-alpha <-    0.3833#-0.5 # association parameter - value
+gammas <- c("(Intercept)" = -4.8526, "Age" = 0.09150) # coefficients for baseline covariates
+alpha <-    0.0833#-0.5 # association parameter - value
 Dalpha <- 0#2.9 # association parameter - slope
 
-phi <- 1.8 #1.6458 # shape for the Weibull baseline hazard
+phi <- 1.4 #1.6458 # shape for the Weibull baseline hazard
 mean.Cens <- 10 #12 # mean of the exponential distribution for the censoring mechanism
 
-D <- diag(c(0.9337, 0.1560)^2)
+D <- diag(c(0.1337, 0.9560)^2)
+
 
 ################################################
 
